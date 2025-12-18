@@ -88,6 +88,7 @@ The scoring system evaluates four dimensions:
 ```
 206.835 - (1.015 x ASL) - (84.6 x ASW)
 ```
+
 Where ASL = average sentence length, ASW = average syllables per word.
 
 **Grade Conversion**:
