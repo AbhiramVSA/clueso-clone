@@ -22,8 +22,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx nodemon src/index.js",
-    "postinstall": "chmod +x ./bin/ffmpeg || true"
+    "dev": "npx nodemon src/index.js"
   },
   "author": "",
   "license": "ISC"

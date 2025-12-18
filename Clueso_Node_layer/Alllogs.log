@@ -1,1 +1,10 @@
-
+2025-12-19 01:40:14 : warn: [Deepgram] API key missing
+2025-12-19 01:40:14 : info: [Frontend Service] Socket.IO server initialized
+2025-12-19 01:40:14 : info: Server started
+2025-12-19 01:40:14 : info: Socket.IO server ready for frontend connections
+2025-12-19 01:40:14 : info: New features enabled: Rate Limiting, Validation, Sessions, Health, Error Handling, Batch Processing
+2025-12-19 01:42:17 : warn: [Deepgram] API key missing
+2025-12-19 01:42:17 : info: [Frontend Service] Socket.IO server initialized
+2025-12-19 01:42:17 : info: Server started
+2025-12-19 01:42:17 : info: Socket.IO server ready for frontend connections
+2025-12-19 01:42:17 : info: New features enabled: Rate Limiting, Validation, Sessions, Health, Error Handling, Batch Processing

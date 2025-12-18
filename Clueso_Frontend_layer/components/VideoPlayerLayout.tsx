@@ -6,6 +6,8 @@ import Timeline from './Timeline';
 import TranscriptPanel from './TranscriptPanel';
 import ExportButton from './ExportButton';
 import EventOverlay from './EventOverlay';
+import KeyboardShortcuts from './KeyboardShortcuts';
+import SessionStats from './SessionStats';
 
 interface VideoPlayerLayoutProps {
     audioData: AudioData | null;
@@ -31,6 +33,9 @@ export default function VideoPlayerLayout({
     const [duration, setDuration] = useState(0);
     const [volume, setVolume] = useState(1);
     const [isMuted, setIsMuted] = useState(false);
+    const [playbackSpeed, setPlaybackSpeed] = useState(1);
+    const SPEED_OPTIONS = [0.5, 0.75, 1, 1.25, 1.5, 2];
+    const [showShortcuts, setShowShortcuts] = useState(false);
 
     // Trim 1 second from start and end
     const TRIM_START = 1;
@@ -169,6 +174,13 @@ export default function VideoPlayerLayout({
         }
     };
 
+    // Playback speed handler
+    const handleSpeedChange = (speed: number) => {
+        if (videoRef.current) videoRef.current.playbackRate = speed;
+        if (audioRef.current) audioRef.current.playbackRate = speed;
+        setPlaybackSpeed(speed);
+    };
+
     // Keyboard shortcuts
     useEffect(() => {
         const handleKeyPress = (e: KeyboardEvent) => {
@@ -190,6 +202,10 @@ export default function VideoPlayerLayout({
                 case 'm':
                     e.preventDefault();
                     toggleMute();
+                    break;
+                case '?':
+                    e.preventDefault();
+                    setShowShortcuts(true);
                     break;
             }
         };
@@ -310,6 +326,19 @@ export default function VideoPlayerLayout({
                                     </div>
 
                                     <div className="flex-1" />
+
+                                    {/* Playback Speed */}
+                                    <select
+                                        value={playbackSpeed}
+                                        onChange={(e) => handleSpeedChange(parseFloat(e.target.value))}
+                                        className="bg-white/20 text-white text-xs rounded px-2 py-1 outline-none cursor-pointer hover:bg-white/30 transition-colors"
+                                    >
+                                        {SPEED_OPTIONS.map((speed) => (
+                                            <option key={speed} value={speed} className="bg-gray-900 text-white">
+                                                {speed}x
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                             </>
                         ) : (
@@ -346,6 +375,9 @@ export default function VideoPlayerLayout({
                     />
                 </div>
             </div>
+
+            {/* Keyboard Shortcuts Modal */}
+            <KeyboardShortcuts isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
         </div>
     );
 }

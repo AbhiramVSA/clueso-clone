@@ -95,6 +95,15 @@ cd ProductAI && uvicorn app.main:app --reload --port 8000
 3. Click "Load unpacked"
 4. Select `Clueso_extension/dist` folder
 
+### 🌐 Local URLs
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| Node.js API | http://localhost:3000 | Backend API |
+| Frontend | http://localhost:3001 | Web dashboard |
+| ProductAI | http://localhost:8000 | AI services |
+| ProductAI Docs | http://localhost:8000/docs | API docs (Swagger) |
+
 ---
 
 ## 📦 Components
@@ -243,9 +252,10 @@ graph TB
 
 ## 📄 Documentation
 
-- [ProductAI Documentation](./PRODUCTAI_DOCUMENTATION.md) - Detailed feature documentation
-- [Extension Event Capture Guide](./Clueso_extension/EXTENSION_EVENT_CAPTURE_GUIDE.md)
-- [Frontend Testing Guide](./Clueso_Node_layer/FRONTEND_TESTING_GUIDE.md)
+- [ProductAI Documentation](./PRODUCTAI_DOCUMENTATION.md) - AI features and services
+- [Node Layer Documentation](./NODE_LAYER_DOCUMENTATION.md) - Backend middlewares and APIs
+- [Extension Documentation](./EXTENSION_DOCUMENTATION.md) - Chrome extension architecture
+- [Frontend Documentation](./FRONTEND_DOCUMENTATION.md) - React components and features
 
 ---
 

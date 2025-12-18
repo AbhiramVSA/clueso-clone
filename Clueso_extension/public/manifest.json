@@ -9,7 +9,9 @@
     "scripting",
     "offscreen",
     "tabs",
-    "alarms"
+    "alarms",
+    "unlimitedStorage",
+    "notifications"
   ],
   "host_permissions": [
     "http://*/*",

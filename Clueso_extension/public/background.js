@@ -6,7 +6,20 @@ const NODE_SERVER_URL = "http://localhost:3000/api/v1/recording/process-recordin
 // Event storage for buffering events from content script
 let eventBuffer = [];
 let currentTabId = null;
-let isCurrentlyRecording = false; // Guard against multiple simultaneous recordings
+let isCurrentlyRecording = false;
+let sessionLogs = [];
+const MAX_LOGS = 100;
+
+function logToSession(message, data = {}) {
+  const logEntry = {
+    timestamp: new Date().toISOString(),
+    message,
+    data
+  };
+  sessionLogs.push(logEntry);
+  if (sessionLogs.length > MAX_LOGS) sessionLogs.shift();
+  console.log(`[background] ${message}`, data);
+}
 
 // ---- SINGLE message listener (correct) ----
 chrome.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
@@ -26,7 +39,7 @@ chrome.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
 
       // Generate sessionId FIRST
       const sessionId = generateSessionId();
-      console.log("[background] Generated sessionId:", sessionId);
+      logToSession("Generated sessionId", { sessionId });
 
       // Mark recording state and notify any open popups
       await chrome.storage.local.set({
@@ -218,33 +231,51 @@ chrome.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
 
       // Send OFFSCREEN_STOP with sessionId
       if (sessionId) {
-        console.log("[background] Sending OFFSCREEN_STOP with sessionId:", sessionId);
+        logToSession("Sending OFFSCREEN_STOP", { sessionId });
         chrome.runtime.sendMessage({ type: "OFFSCREEN_STOP", sessionId: sessionId });
       } else {
-        console.warn("[background] No sessionId available, sending OFFSCREEN_STOP without sessionId");
+        logToSession("Sending OFFSCREEN_STOP without sessionId");
         chrome.runtime.sendMessage({ type: "OFFSCREEN_STOP" });
+      }
+    }
+
+    if (msg?.type === "PAUSE_RECORDING") {
+      logToSession("PAUSE received in background");
+      if (isCurrentlyRecording) {
+        chrome.runtime.sendMessage({ type: "PAUSE_RECORDING" });
+        if (currentTabId) {
+          chrome.tabs.sendMessage(currentTabId, { type: "PAUSE_RECORDING" }).catch(() => { });
+        }
+        logToSession("Pause coordinated");
+      }
+    }
+
+    if (msg?.type === "RESUME_RECORDING") {
+      logToSession("RESUME received in background");
+      if (isCurrentlyRecording) {
+        chrome.runtime.sendMessage({ type: "RESUME_RECORDING" });
+        if (currentTabId) {
+          chrome.tabs.sendMessage(currentTabId, { type: "RESUME_RECORDING" }).catch(() => { });
+        }
+        logToSession("Resume coordinated");
       }
     }
 
     // Handle real-time event capture from content script
     if (msg?.type === "EVENT_CAPTURED") {
       eventBuffer.push(msg.event);
-      console.log(`[background] Event buffered: ${eventBuffer.length} total`);
-      // Optional: Send events in batches to Node.js server
-      // For now, we'll send all events when recording stops
+      // logToSession(`Event buffered: ${eventBuffer.length} total`);
     }
 
     // Handle redirect request from offscreen document
     if (msg?.type === "REDIRECT_TO_DASHBOARD") {
       try {
         if (msg.url) {
-          console.log("[background] Creating tab for dashboard:", msg.url);
+          logToSession("Creating tab for dashboard", { url: msg.url });
           await chrome.tabs.create({ url: msg.url });
-        } else {
-          console.warn("[background] REDIRECT_TO_DASHBOARD message missing url");
         }
       } catch (err) {
-        console.error("[background] Failed to create dashboard tab:", err);
+        logToSession("Failed to create dashboard tab", { error: err.message });
       }
     }
   } catch (err) {
@@ -252,6 +283,36 @@ chrome.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
   }
 
   return true; // Keep message channel open for async responses
+});
+
+// Multi-Tab Support: Handle page reloads and navigation
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete' && isCurrentlyRecording && tabId === currentTabId) {
+    logToSession("Tab updated/reloaded, re-injecting content script", { tabId, url: tab.url });
+
+    try {
+      await injectContentScript(tabId);
+      const res = await chrome.storage.local.get('currentSessionId');
+      if (res.currentSessionId) {
+        await sendMessageWithRetry(tabId, {
+          type: "START_RECORDING",
+          sessionId: res.currentSessionId
+        }, 5, 300);
+        logToSession("Content script resumed after reload");
+      }
+    } catch (err) {
+      logToSession("Failed to resume content script after reload", { error: err.message });
+    }
+  }
+});
+
+// Also handle tab switching
+chrome.tabs.onActivated.addListener(async (activeInfo) => {
+  if (isCurrentlyRecording) {
+    logToSession("Active tab changed", { tabId: activeInfo.tabId });
+    // We don't automatically move recording to new tab unless requested,
+    // but we track it to avoid confusion.
+  }
 });
 
 // Wait for content script to be ready (with retries)
@@ -426,6 +487,16 @@ async function sendEventsToNodeServer(sessionData) {
     // Don't throw - just log the error so recording can complete
     return { success: false, error: error.message };
   }
+}
+
+// Function to download session logs
+function downloadLogs() {
+  const blob = new Blob([JSON.stringify(sessionLogs, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  chrome.downloads.download({
+    url: url,
+    filename: `clueso-session-logs-${Date.now()}.json`
+  });
 }
 
 // Generate session ID

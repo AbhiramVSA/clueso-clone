@@ -11,6 +11,7 @@ let sessionId = null;
 // Track in-flight chunk uploads to prevent race condition
 let pendingUploads = [];
 let isStoppingRecording = false;
+let isPaused = false;
 
 const VIDEO_UPLOAD_URL = "http://localhost:3000/api/v1/recording/video-chunk";
 const AUDIO_UPLOAD_URL = "http://localhost:3000/api/v1/recording/audio-chunk";
@@ -51,7 +52,35 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     sendResponse({ success: true });
     return true;
   }
+
+  if (msg.type === "PAUSE_RECORDING") {
+    pauseRecording();
+    sendResponse({ success: true });
+    return true;
+  }
+
+  if (msg.type === "RESUME_RECORDING") {
+    resumeRecording();
+    sendResponse({ success: true });
+    return true;
+  }
 });
+
+function pauseRecording() {
+  if (!isRecording || isPaused) return;
+  isPaused = true;
+  videoRecorder?.pause();
+  audioRecorder?.pause();
+  console.log("[offscreen] Recording paused");
+}
+
+function resumeRecording() {
+  if (!isRecording || !isPaused) return;
+  isPaused = false;
+  videoRecorder?.resume();
+  audioRecorder?.resume();
+  console.log("[offscreen] Recording resumed");
+}
 
 function redirectToDashboard(sessionId) {
   try {
@@ -277,6 +306,14 @@ function uploadVideoChunk(blob) {
   formData.append('timestamp', Date.now());
   formData.append('chunk', blob);
 
+  // Enhanced Metadata
+  formData.append('context', JSON.stringify({
+    title: document.title,
+    url: window.location.href,
+    userAgent: navigator.userAgent,
+    timestamp: Date.now()
+  }));
+
   // ✅ SAFE FIX #3: Log chunk details for debugging
   console.log(`[offscreen] Video chunk ${videoChunkSequence}: ${blob.size} bytes, session: ${sessionId}`);
 
@@ -325,6 +362,14 @@ function uploadAudioChunk(blob) {
   formData.append('sequence', audioChunkSequence);
   formData.append('timestamp', Date.now());
   formData.append('chunk', blob);
+
+  // Enhanced Metadata
+  formData.append('context', JSON.stringify({
+    title: document.title,
+    url: window.location.href,
+    userAgent: navigator.userAgent,
+    timestamp: Date.now()
+  }));
 
   // ✅ SAFE FIX #3: Log chunk details for debugging
   console.log(`[offscreen] Audio chunk ${audioChunkSequence}: ${blob.size} bytes, session: ${sessionId}`);
