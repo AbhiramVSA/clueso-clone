@@ -33,6 +33,9 @@ router.post('/upload-audio', upload.single('audio'), (req, res) => {
 router.use("/recording", require("./recording-routes"));
 router.use("/frontend", require("./frontend-routes"));
 router.use("/python", require("./python-routes"));
+router.use("/sessions", require("./session-routes"));
+router.use("/health", require("./health-routes"));
+router.use("/batch", require("./batch-routes"));
 
 router.get('/info', InfoController.info);
 
