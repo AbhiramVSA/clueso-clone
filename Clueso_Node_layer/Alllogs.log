@@ -8,3 +8,15 @@
 2025-12-19 01:42:17 : info: Server started
 2025-12-19 01:42:17 : info: Socket.IO server ready for frontend connections
 2025-12-19 01:42:17 : info: New features enabled: Rate Limiting, Validation, Sessions, Health, Error Handling, Batch Processing
+2025-12-19 01:48:14 : info: [Deepgram] Client initialized
+2025-12-19 01:48:14 : info: [Frontend Service] Socket.IO server initialized
+2025-12-19 01:48:14 : info: Server started
+2025-12-19 01:48:14 : info: Socket.IO server ready for frontend connections
+2025-12-19 01:48:14 : info: New features enabled: Rate Limiting, Validation, Sessions, Health, Error Handling, Batch Processing
+2025-12-19 01:48:45 : warn: [Error Handler] Client error: Cannot GET /recording/session_1234567890_abc123
+2025-12-19 01:48:45 : warn: [Error Handler] Client error: Cannot GET /recording/session_1234567890_abc123
+2025-12-19 01:49:34 : info: [Frontend Service] Client connected: rbrm-rDLMO5IUP9dAAAC
+2025-12-19 01:49:34 : info: [Frontend Service] Client rbrm-rDLMO5IUP9dAAAC registered for session: session_1234567890_abc123
+2025-12-19 01:49:34 : warn: [Frontend Service] Session session_1234567890_abc123 already has a client, disconnecting old client
+2025-12-19 01:49:34 : info: [Frontend Service] Client disconnected and removed from session: session_1234567890_abc123
+2025-12-19 01:49:34 : info: [Frontend Service] Client rbrm-rDLMO5IUP9dAAAC registered for session: session_1234567890_abc123
