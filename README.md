@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/clueso-mark.svg" alt="Clueso recording frame with event markers" width="104">
+  <img src="assets/clueso-logo.png" alt="Video capture frame with recording dot, edit timeline, and narration waveform" width="200">
 </p>
 
 <h1 align="center">Clueso Clone</h1>
