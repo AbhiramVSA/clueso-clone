@@ -1,282 +1,121 @@
-# Clueso Clone
+<p align="center">
+  <img src="assets/clueso-mark.svg" alt="Clueso recording frame with event markers" width="104">
+</p>
 
-A complete screen recording platform that transforms raw screen recordings into polished product demos with AI-powered narration, intelligent event capture, and multi-language support.
+<h1 align="center">Clueso Clone</h1>
 
-## 🎯 Overview
+<p align="center">A multi-service prototype for browser capture, recording uploads, and AI-assisted narration.</p>
 
-This project consists of four main components working together to create professional product demonstration videos:
+<div align="center">
 
-1. **Chrome Extension** - Captures user interactions and DOM events during screen recording
-2. **Node.js Backend** - Processes recordings, manages sessions, and orchestrates the pipeline
-3. **Next.js Frontend** - User interface for recording management and playback
-4. **ProductAI** - Python/FastAPI backend providing AI-powered features
+[Overview](#overview) · [Run locally](#run-locally) · [Services and routes](#services-and-routes) · [Configuration](#configuration) · [Tests](#tests) · [Scope](#scope-and-notes)
 
-```
-clueso/
-├── Clueso_extension/      # Chrome extension for event capture
-├── Clueso_Node_layer/     # Node.js backend API
-├── Clueso_Frontend_layer/ # Next.js web application
-├── ProductAI/             # Python AI services
-└── README.md              # This file
-```
+</div>
 
----
+## Overview
 
-## 🔧 Tech Stack
+This repository contains four connected parts: a Chrome extension, an Express and Socket.IO service, a Next.js viewer, and a FastAPI processing service. The extension records screen and microphone media and collects page events. The Node service receives recording chunks and forwards processing requests to ProductAI. The viewer opens a recording session and receives socket updates.
 
-| Component | Technology |
-|-----------|------------|
-| Extension | Vite + Chrome Extensions API |
-| Backend | Node.js + Express + Sequelize |
-| Frontend | Next.js + React + TypeScript |
-| AI Services | Python + FastAPI + Gemini API |
+The session-list page currently uses in-code sample entries; it does not load a live session list from the Node API. This repository is a prototype and does not provide a verified end-to-end deployment.
 
----
+## Run locally
 
-## 🚀 Quick Start
+You need Node.js with npm, Python with pip, and Chrome. ProductAI declares Python 3.13 or newer. Start the services in the order below. The example ports match the extension’s current local URLs.
 
-### Prerequisites
+### 1. Start ProductAI
 
-- Node.js 18+
-- Python 3.11+
-- Chrome browser
-- Gemini API key
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/AbhiramVSA/clueso-clone.git
-cd clueso-clone
-```
-
-### 2. Set Up Environment Variables
-
-Create a `.env` file in the root:
-
-```env
-GEMINI_API_KEY=your_gemini_api_key
-ELEVENLABS_API_KEY=your_elevenlabs_api_key
-PORT=3000
-```
-
-### 3. Install Dependencies
-
-```bash
-# Node.js backend
-cd Clueso_Node_layer && npm install
-
-# Frontend
-cd ../Clueso_Frontend_layer && npm install
-
-# Extension
-cd ../Clueso_extension && npm install
-
-# ProductAI
-cd ../ProductAI && pip install -r requirements.txt
-```
-
-### 4. Run the Services
-
-```bash
-# Terminal 1: Node backend
-cd Clueso_Node_layer && npm run dev
-
-# Terminal 2: Frontend
-cd Clueso_Frontend_layer && npm run dev
-
-# Terminal 3: ProductAI
-cd ProductAI && uvicorn app.main:app --reload --port 8000
-```
-
-### 5. Load the Extension
-
-1. Open Chrome → `chrome://extensions/`
-2. Enable Developer Mode
-3. Click "Load unpacked"
-4. Select `Clueso_extension/dist` folder
-
-### 🌐 Local URLs
-
-| Service | URL | Description |
-|---------|-----|-------------|
-| Node.js API | http://localhost:3000 | Backend API |
-| Frontend | http://localhost:3001 | Web dashboard |
-| ProductAI | http://localhost:8000 | AI services |
-| ProductAI Docs | http://localhost:8000/docs | API docs (Swagger) |
-
----
-
-## 📦 Components
-
-### Chrome Extension (`Clueso_extension/`)
-
-Captures real-time DOM events during screen recordings:
-- Click events with element context
-- Scroll interactions
-- Input changes
-- Navigation events
-- Screenshot captures
-
-**Build**: `npm run build`  
-**Output**: `dist/` folder for Chrome loading
-
----
-
-### Node.js Backend (`Clueso_Node_layer/`)
-
-RESTful API for session management and processing:
-
-```
-src/
-├── config/         # Environment and database setup
-├── controllers/    # Route handlers
-├── middlewares/    # Request interceptors
-├── repositories/   # Database queries
-├── routes/         # API endpoints
-├── services/       # Business logic
-└── utils/          # Helpers and error classes
-```
-
-**Run**: `npm run dev`  
-**Port**: 3000 (default)
-
----
-
-### Next.js Frontend (`Clueso_Frontend_layer/`)
-
-User interface for managing recordings:
-
-```
-├── app/          # Next.js app router pages
-├── components/   # React components
-├── hooks/        # Custom React hooks
-└── lib/          # Utility functions
-```
-
-**Run**: `npm run dev`  
-**Port**: 3001 (default)
-
----
-
-### ProductAI (`ProductAI/`)
-
-Python FastAPI backend with 6 AI-powered features:
-
-| Feature | Endpoint | Description |
-|---------|----------|-------------|
-| **Quality Scoring** | `POST /score-quality` | Evaluates script clarity, engagement, professionalism |
-| **Sentiment Analysis** | `POST /analyze-sentiment` | Detects tone issues and improvement areas |
-| **Summarization** | `POST /generate-summary` | Creates executive, overview, and social snippets |
-| **Analytics** | `GET /analytics/*` | Session statistics and quality trends |
-| **Caching** | `GET /cache/*` | TTL-based caching for API cost reduction |
-| **Translation** | `POST /translate` | Multi-language script translation |
-
-**Run**: `uvicorn app.main:app --reload`  
-**Port**: 8000  
-**Docs**: http://localhost:8000/docs
-
----
-
-## 📡 API Endpoints
-
-### ProductAI Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/process-recording` | Process DOM events into narration |
-| POST | `/audio-full-process` | Full audio generation pipeline |
-| POST | `/score-quality` | Quality scoring |
-| POST | `/analyze-sentiment` | Sentiment analysis |
-| POST | `/generate-summary` | Script summarization |
-| POST | `/translate` | Translation |
-| GET | `/analytics/overview` | Usage statistics |
-| GET | `/health` | Health check |
-
-### Node.js Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/recordings` | Create new recording session |
-| GET | `/api/recordings/:id` | Get recording details |
-| POST | `/api/events` | Submit captured events |
-
----
-
-## 🧪 Testing
-
-### ProductAI Tests
-
-```bash
+```sh
 cd ProductAI
-uv run pytest tests/ -v
+python -m venv .venv
+. .venv/bin/activate
+python -m pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
 ```
 
-Test coverage:
-- `test_quality.py` - Quality scoring algorithms (18 tests)
-- `test_sentiment.py` - Tone detection (20 tests)
-- `test_cache.py` - Cache operations (10 tests)
-- `test_summarization.py` - Summary generation (12 tests)
+The API docs are at `http://localhost:8000/docs`. Model-backed endpoints need `GEMINI_API_KEY`; narration audio uses `DEEPGRAM_API_KEY`.
 
----
+### 2. Start the Node service
 
-## 🗂️ Architecture
+In a second terminal, from the repository root:
 
-```mermaid
-graph TB
-    A[Chrome Extension] -->|DOM Events| B[Node.js Backend]
-    B -->|Events + Metadata| C[ProductAI]
-    C -->|Script + Audio| B
-    B -->|Recording Data| D[Next.js Frontend]
-    C -->|Gemini API| E[Google AI]
-    C -->|TTS| F[ElevenLabs]
+```sh
+cd Clueso_Node_layer
+npm ci
+npm run dev
 ```
 
-### Data Flow
+The service listens on port `3000` by default and uses ProductAI at `http://localhost:8000` by default.
 
-1. **Extension** captures user interactions during recording
-2. **Node.js** receives events and manages session state
-3. **ProductAI** processes events into AI-generated narration
-4. **Frontend** displays recordings and enables playback
+### 3. Start the web viewer
 
----
+In a third terminal, from the repository root:
 
-## 📋 Environment Variables
+```sh
+cd Clueso_Frontend_layer
+npm ci
+npm run dev -- --port 3001
+```
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `GEMINI_API_KEY` | Yes | Google AI API key |
-| `ELEVENLABS_API_KEY` | No | Text-to-speech API key |
-| `PORT` | No | Node.js server port (default: 3000) |
+Open `http://localhost:3001`. The extension and viewer use local ports `3000` and `3001`. If you change either port, update the matching client configuration.
 
----
+### 4. Build and load the extension
 
-## 📄 Documentation
+```sh
+cd Clueso_extension
+npm ci
+npm run build
+```
 
-- [ProductAI Documentation](./PRODUCTAI_DOCUMENTATION.md) - AI features and services
-- [Node Layer Documentation](./NODE_LAYER_DOCUMENTATION.md) - Backend middlewares and APIs
-- [Extension Documentation](./EXTENSION_DOCUMENTATION.md) - Chrome extension architecture
-- [Frontend Documentation](./FRONTEND_DOCUMENTATION.md) - React components and features
+In Chrome, open `chrome://extensions`, enable Developer mode, select **Load unpacked**, and choose `Clueso_extension/dist`. Chrome will request screen and microphone access when you start a recording.
 
----
+## Services and routes
 
-## 🤝 Contributing
+| Service | Source | Main responsibilities |
+| --- | --- | --- |
+| Chrome extension | [`Clueso_extension/`](Clueso_extension/) | Captures screen and microphone chunks plus browser events. It submits chunks to the local Node service. |
+| Node service | [`Clueso_Node_layer/`](Clueso_Node_layer/) | Express and Socket.IO endpoints for recording chunks, sessions, health checks, and ProductAI forwarding. |
+| ProductAI | [`ProductAI/`](ProductAI/) | FastAPI endpoints for recording processing, summaries, sentiment, quality scoring, translation, and analytics. |
+| Web viewer | [`Clueso_Frontend_layer/`](Clueso_Frontend_layer/) | Next.js session entry and recording view with live socket updates. The session list uses sample data. |
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests
-5. Submit a pull request
+The Node recording routes include `POST /api/v1/recording/video-chunk`, `POST /api/v1/recording/audio-chunk`, and `POST /api/v1/recording/process-recording`. ProductAI exposes `POST /process-recording`, `POST /audio-full-process`, `POST /generate-summary`, `POST /analyze-sentiment`, `POST /score-quality`, `POST /translate`, and `GET /health`.
 
----
+## Configuration
 
-## 📝 License
+The repository does not include service-specific `.env.example` files. Set only the values you use in your local environment, and do not commit API credentials.
 
-This project is part of a Clueso internship submission.
+| Variable | Used by | Purpose |
+| --- | --- | --- |
+| `PORT` | Node service | Changes its listen port; default is `3000`. |
+| `PYTHON_LAYER_URL` | Node service | Sets the ProductAI base URL; default is `http://localhost:8000`. |
+| `PYTHON_SERVICE_TIMEOUT` | Node service | Sets the request timeout for ProductAI calls. |
+| `GEMINI_API_KEY` | ProductAI | Authenticates Gemini model calls. |
+| `DEEPGRAM_API_KEY` | Node service and ProductAI | Authenticates Deepgram transcription or speech requests. |
+| `NEXT_PUBLIC_BACKEND_URL` | Web viewer | Sets the base URL used to build recording media URLs; default is `http://localhost:3000`. |
+| `NEXT_PUBLIC_SOCKET_URL` | Web viewer | Sets the Socket.IO connection target; default is `http://localhost:3000`. |
+| `NODE_SERVER_URL` | ProductAI | Sets the Node service target for generated media forwarding. |
 
----
+Node reads its `.env` file from the repository root. The web viewer reads its public variables when Next.js starts.
 
-## 👤 Author
+## Scope and notes
 
-**Abhiram VSA**
+- The browser extension uses local Node and viewer URLs in its current source. Keep the documented ports unless you update those URLs.
+- The UI session list is a mock. The recording view requires a session ID and a running Node socket service.
+- The code and dependency locks are split by service. Install packages from each service directory.
+- The repository describes this project as part of a Clueso internship submission. The Node package metadata lists ISC, but the repository has no root `LICENSE` file.
 
-- GitHub: [@AbhiramVSA](https://github.com/AbhiramVSA)
+## Tests
+
+ProductAI test files are in [`ProductAI/tests/`](ProductAI/tests/). The runtime requirements do not include pytest; after you install pytest in the development environment, run the suite from `ProductAI/`:
+
+```sh
+python -m pytest tests/ -v
+```
+
+## Component documentation
+
+- [Frontend implementation notes](FRONTEND_DOCUMENTATION.md)
+- [Node service notes](NODE_LAYER_DOCUMENTATION.md)
+- [ProductAI notes](PRODUCTAI_DOCUMENTATION.md)
+- [Extension notes](EXTENSION_DOCUMENTATION.md)
+
+**Author:** Abhiram VSA · [GitHub](https://github.com/AbhiramVSA)

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">Clueso recording mark</title>
+  <desc id="desc">A recording frame with a play symbol and event markers.</desc>
+  <rect x="12" y="18" width="104" height="92" rx="22" fill="#172554"/>
+  <rect x="22" y="28" width="84" height="72" rx="14" fill="#f6f8ff"/>
+  <path d="M54 46v36l30-18z" fill="#6c63ff"/>
+  <path d="M32 96h64" stroke="#26b6a8" stroke-linecap="round" stroke-width="6"/>
+  <circle cx="39" cy="96" r="5" fill="#f27c6a"/>
+  <circle cx="65" cy="96" r="5" fill="#f27c6a"/>
+  <circle cx="88" cy="96" r="5" fill="#f27c6a"/>
+  <circle cx="92" cy="42" r="6" fill="#f27c6a"/>
+</svg>
